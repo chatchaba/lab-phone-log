@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกการรับโทรศัพท์ LAB 1 - Blood Bank</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Kodchasan:wght@400;700&display=swap">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: linear-gradient(135deg, #FFDDDD 0%, #FFCCCC 50%, #FFBDBD 100%); /* ไล่ระดับสีแดงเลือดนกอ่อนๆ */
+        }
+        .header-bg {
+            background: linear-gradient(to right, #8B0000, #B22222); /* สีแดงเข้มสำหรับ Header */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card-bg {
+            background-color: rgba(255, 255, 255, 0.9); /* การ์ดสีขาวโปร่งแสงเล็กน้อย */
+        }
+        .font-kodchasan {
+            font-family: 'Kodchasan', sans-serif;
+        }
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            color: #8B0000;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #8B0000;
+            animation: spin 1s ease infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p class="font-semibold">กำลังเชื่อมต่อฐานข้อมูล...</p>
+    </div>
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+        <header class="text-center mb-8 bg-white p-6 rounded-xl shadow-lg card-bg">
+            <h1 class="text-3xl sm:text-4xl font-extrabold header-bg mb-2">ระบบบันทึกการรับโทรศัพท์ LAB 1</h1>
+            <p class="text-lg text-gray-600 mb-4">Blood Bank Communication Log</p>
+            <div class="text-md text-gray-700 p-3 bg-red-50 rounded-lg border border-red-200 font-kodchasan">
+                <p class="font-semibold text-red-800 mb-2">รายชื่อหอผู้ป่วย:</p>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H18.375c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.75v-3.75m1.875 1.875h-3.75" />
+                        </svg>
+                        <span>3ง</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H18.375c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.75v-3.75m1.875 1.875h-3.75" />
+                        </svg>
+                        <span>SICU1</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H18.375c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.75v-3.75m1.875 1.875h-3.75" />
+                        </svg>
+                        <span>ไตเทียม</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H18.375c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.75v-3.75m1.875 1.875h-3.75" />
+                        </svg>
+                        <span>PICU</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H18.375c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.75v-3.75m1.875 1.875h-3.75" />
+                        </svg>
+                        <span>5จ</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H18.375c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.75v-3.75m1.875 1.875h-3.75" />
+                        </svg>
+                        <span>IMC 4ข</span>
+                    </li>
+                    <li class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H18.375c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.75v-3.75m1.875 1.875h-3.75" />
+                        </svg>
+                        <span>4ค</span>
+                    </li>
+                </ul>
+            </div>
+        </header>
+
+        <!-- Main Form Card --><div class="p-6 rounded-xl shadow-lg mb-8 card-bg">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                 <h2 class="text-xl font-bold text-gray-700 mb-4 sm:mb-0">บันทึกข้อมูลการสื่อสาร</h2>
+                 <div class="bg-red-100 text-red-800 font-bold py-2 px-4 rounded-lg border border-red-300">
+                    จำนวนสายโทรเข้าทั้งหมด: <span id="call-count">0</span>
+                </div>
+            </div>
+
+            <form id="log-form" class="space-y-4">
+                <!-- Communication Type --><div>
+                    <label for="communication-type" class="block text-sm font-medium text-gray-700 mb-1">1. ประเภทการสื่อสาร</label>
+                    <select id="communication-type" name="communication-type" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                        <option value="แจ้งใช้ Red cell">แจ้งใช้ Red cell</option>
+                        <option value="แจ้งใช้ FFP">แจ้งใช้ FFP</option>
+                        <option value="แจ้งใช้ PLT">แจ้งใช้ PLT</option>
+                        <option value="แจ้งใช้ Cryo">แจ้งใช้ Cryo</option>
+                        <option value="ศสก.เช็คเลือด OR">ศสก.เช็คเลือด OR</option>
+                        <option value="OR แจ้งใช้เลือดฝาก">OR แจ้งใช้เลือดฝาก</option>
+                        <option value="อื่นๆ">อื่นๆ (โปรดระบุ)</option>
+                    </select>
+                </div>
+
+                <!-- Other Communication Type Input (Hidden by default) --><div id="other-type-container" class="hidden">
+                    <label for="other-type-input" class="block text-sm font-medium text-gray-700 mb-1">โปรดระบุประเภทการสื่อสาร</label>
+                    <input type="text" id="other-type-input" name="other-type-input" placeholder="เช่น สอบถามผลเลือด, ปรึกษา..." class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                </div>
+
+                <!-- Ward Name --><div>
+                    <label for="ward-name" class="block text-sm font-medium text-gray-700 mb-1">2. ชื่อหอผู้ป่วย</label>
+                    <select id="ward-name" name="ward-name" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                        <option value="3ง">3ง</option>
+                        <option value="SICU1">SICU1</option>
+                        <option value="ไตเทียม">ไตเทียม</option>
+                        <option value="PICU">PICU</option>
+                        <option value="5จ">5จ</option>
+                        <option value"IMC 4ข">IMC 4ข</option>
+                        <option value="4ค">4ค</option>
+                    </select>
+                </div>
+
+                <!-- Submit Button --><div class="text-right pt-2">
+                    <button type="submit" id="submit-button" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 transition-colors disabled:opacity-50" disabled>
+                        บันทึกข้อมูล
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Log Table --><div class="p-6 rounded-xl shadow-lg card-bg">
+             <h2 class="text-xl font-bold text-gray-700 mb-4">รายการบันทึก</h2>
+             <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-red-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-red-800 uppercase tracking-wider">Timestamp</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-red-800 uppercase tracking-wider">ประเภทการสื่อสาร</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-red-800 uppercase tracking-wider">หอผู้ป่วย</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Log rows will be inserted here by JavaScript --><tr id="placeholder-row">
+                            <td colspan="3" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">กำลังโหลดข้อมูล...</td>
+                        </tr>
+                    </tbody>
+                </table>
+             </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Scripts -->
+    <script type="module">
+        // --- Firebase Config (MANDATORY) ---
+        // These variables are provided by the environment.
+        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // --- End of Config ---
+
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            signInWithCustomToken, 
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            onSnapshot, 
+            query,
+            Timestamp
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // UI Elements
+            const logForm = document.getElementById('log-form');
+            const communicationTypeSelect = document.getElementById('communication-type');
+            const otherTypeContainer = document.getElementById('other-type-container');
+            const otherTypeInput = document.getElementById('other-type-input');
+            const wardNameSelect = document.getElementById('ward-name');
+            const logTableBody = document.getElementById('log-table-body');
+            const callCountSpan = document.getElementById('call-count');
+            const placeholderRow = document.getElementById('placeholder-row');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const submitButton = document.getElementById('submit-button');
+            
+            let logs = []; // Local cache of logs
+            let db; // Firestore instance
+            let auth; // Auth instance
+            let logsCollectionRef; // Reference to the 'phoneLogs' collection
+
+            try {
+                // 1. Initialize Firebase
+                const firebaseConfig = JSON.parse(firebaseConfigStr);
+                if (!firebaseConfig.apiKey) {
+                    console.error("Firebase config is missing or invalid.");
+                    loadingOverlay.textContent = "เกิดข้อผิดพลาดในการตั้งค่า Firebase";
+                    return;
+                }
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // 2. Authenticate User
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        console.log("User is authenticated:", user.uid);
+                        // User is signed in, set up Firestore listener
+                        setupFirestoreListener(user.uid);
+                        submitButton.disabled = false; // Enable form submission
+                        loadingOverlay.style.display = 'none'; // Hide loading
+                    } else {
+                        console.log("User is not authenticated.");
+                        // No user is signed in.
+                        submitButton.disabled = true;
+                        loadingOverlay.style.display = 'flex';
+                    }
+                });
+
+                // Try signing in
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                    console.log("Signed in with custom token.");
+                } else {
+                    await signInAnonymously(auth);
+                    console.log("Signed in anonymously.");
+                }
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                loadingOverlay.innerHTML = `<p class="font-semibold text-red-700">เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}</p>`;
+            }
+
+            // 3. Setup Firestore Listener Function
+            function setupFirestoreListener(userId) {
+                if (!db) return;
+
+                // This path is for data shared among all users of this app
+                const collectionPath = `/artifacts/${appId}/public/data/phoneLogs`;
+                logsCollectionRef = collection(db, collectionPath);
+                
+                // Create a query
+                const q = query(logsCollectionRef);
+
+                // Listen for real-time updates
+                onSnapshot(q, (querySnapshot) => {
+                    logs = []; // Clear local cache
+                    querySnapshot.forEach((doc) => {
+                        logs.push(doc.data());
+                    });
+                    
+                    // Sort logs in JavaScript (newest first)
+                    // We sort by timestamp string directly
+                    logs.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+
+                    // Update UI
+                    renderTable();
+                    updateCallCount();
+
+                }, (error) => {
+                    console.error("Error getting documents: ", error);
+                    placeholderRow.innerHTML = `<td colspan="3" class="px-6 py-4 text-sm text-red-600 text-center">เกิดข้อผิดพลาดในการโหลดข้อมูล</td>`;
+                });
+            }
+
+            // Show/hide the 'other' input field
+            communicationTypeSelect.addEventListener('change', function() {
+                if (this.value === 'อื่นๆ') {
+                    otherTypeContainer.classList.remove('hidden');
+                    otherTypeInput.required = true;
+                } else {
+                    otherTypeContainer.classList.add('hidden');
+                    otherTypeInput.required = false;
+                    otherTypeInput.value = ''; // Clear the input
+                }
+            });
+
+            // 4. Handle Form Submission (Save to Firestore)
+            logForm.addEventListener('submit', async function(event) {
+                event.preventDefault(); // Prevent page reload
+                if (!logsCollectionRef) {
+                    console.error("Firestore connection not ready.");
+                    // In a real app, you'd show a user-friendly error
+                    return;
+                }
+
+                // Get data from form
+                let communicationType = communicationTypeSelect.value;
+                if (communicationType === 'อื่นๆ') {
+                    communicationType = otherTypeInput.value.trim();
+                }
+                const wardName = wardNameSelect.value;
+
+                // Basic validation
+                if (communicationType === '') {
+                    // We'll use a custom modal in a real app, but alert is fine for now
+                    console.log("Validation failed: Communication type is empty.");
+                    // Note: We avoid alert() per instructions.
+                    return;
+                }
+
+                // Create log object
+                const newLog = {
+                    timestamp: new Date().toISOString(), // Use ISO string for sorting
+                    type: communicationType,
+                    ward: wardName,
+                    userId: auth.currentUser ? auth.currentUser.uid : 'unknown' // Optional: track who logged it
+                };
+
+                // Disable button to prevent double submit
+                submitButton.disabled = true;
+                submitButton.textContent = "กำลังบันทึก...";
+
+                try {
+                    // Add a new document to Firestore
+                    const docRef = await addDoc(logsCollectionRef, newLog);
+                    console.log("Document written with ID: ", docRef.id);
+                    
+                    // Reset form
+                    logForm.reset();
+                    otherTypeContainer.classList.add('hidden');
+                    otherTypeInput.required = false;
+
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                    // Show error to user (again, no alert())
+                } finally {
+                    // Re-enable button
+                    submitButton.disabled = false;
+                    submitButton.textContent = "บันทึกข้อมูล";
+                }
+
+                // Note: We DON'T need to manually update the table here.
+                // The 'onSnapshot' listener will detect the new data and update the UI automatically.
+            });
+
+            // 5. Update Call Count Function
+            function updateCallCount() {
+                callCountSpan.textContent = logs.length;
+            }
+
+            // 6. Render Table Function
+            function renderTable() {
+                logTableBody.innerHTML = ''; // Clear the table body
+                
+                if (logs.length === 0) {
+                     placeholderRow.innerHTML = `<td colspan="3" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">ยังไม่มีข้อมูล...</td>`;
+                     logTableBody.appendChild(placeholderRow);
+                     return;
+                }
+
+                logs.forEach(log => {
+                    const row = document.createElement('tr');
+                    
+                    const timestampCell = document.createElement('td');
+                    timestampCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+                    // log.timestamp is an ISO string, convert back to Date to format
+                    timestampCell.textContent = formatTimestamp(new Date(log.timestamp)); 
+                    
+                    const typeCell = document.createElement('td');
+                    typeCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500';
+                    typeCell.textContent = log.type;
+
+                    const wardCell = document.createElement('td');
+                    wardCell.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium';
+                    wardCell.textContent = log.ward;
+
+                    row.appendChild(timestampCell);
+                    row.appendChild(typeCell);
+                    row.appendChild(wardCell);
+
+                    logTableBody.appendChild(row);
+                });
+            }
+            
+            function formatTimestamp(date) {
+                const options = {
+                    year: 'numeric', month: 'numeric', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                    hour12: false
+                };
+                return new Intl.DateTimeFormat('th-TH', options).format(date);
+            }
+        });
+    </script>
+</body>
+</html>
+
